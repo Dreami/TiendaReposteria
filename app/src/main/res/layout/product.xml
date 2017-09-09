@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="11dp"
+        android:layout_marginStart="11dp"
+        android:id="@+id/productThumbnail"
+        android:layout_alignTop="@+id/add"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+    <TextView
+        android:layout_width="90dp"
+        android:layout_height="20dp"
+        android:id="@+id/productName"
+        android:layout_marginLeft="12dp"
+        android:layout_marginStart="12dp"
+        android:textSize="16dp"
+        android:textColor="#000000"
+        android:layout_alignTop="@+id/productThumbnail"
+        android:layout_toRightOf="@+id/productThumbnail"
+        android:layout_toEndOf="@+id/productThumbnail" />
+
+    <TextView
+        android:layout_width="90dp"
+        android:layout_height="20dp"
+        android:id="@+id/productPrice"
+        android:textSize="16dp"
+        android:textColor="#000000"
+        android:layout_below="@+id/productName"
+        android:layout_alignLeft="@+id/productName"
+        android:layout_alignStart="@+id/productName" />
+
+    <Button
+        android:id="@+id/add"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="13dp"
+        android:text="+"
+        android:textSize="30dp"
+        android:background="#32db04"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:id="@+id/substract"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:text="-"
+        android:textSize="30dp"
+        android:background="#db0404"
+        android:layout_marginLeft="63dp"
+        android:layout_marginStart="63dp"
+        android:layout_alignBottom="@+id/add"
+        android:layout_alignLeft="@+id/add"
+        android:layout_alignStart="@+id/add" />
+
+    <TextView
+        android:id="@+id/amount"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:textSize="25dp"
+        android:textAlignment="center"
+        android:background="#ffffff"
+        android:layout_alignTop="@+id/substract"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="11dp"
+        android:layout_marginEnd="11dp" />
+
+    <TextView
+        android:id="@+id/priceTotal"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignTop="@+id/amount"
+        android:layout_alignBottom="@+id/amount"
+        android:layout_marginLeft="10dp"
+        android:textColor="#000000"
+        android:layout_toEndOf="@+id/substract"
+        android:layout_toRightOf="@+id/substract" />
+</RelativeLayout>
