@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -15,12 +14,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements notifyChanges{
     ListView listView = null;
     ArrayList<Ingredientes> shoppingList = null;
-    Productos productos;
     TextView priceTotal;
     TextView unitTotal;
 
@@ -28,47 +27,49 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        productos = new Productos();
 
         listView = (ListView) findViewById(R.id.list_products);
         priceTotal = (TextView) findViewById(R.id.precioTotal);
         unitTotal = (TextView) findViewById(R.id.unidadesTotal);
 
         shoppingList = new ArrayList<>();
-        shoppingList.add(new Ingredientes("Leche", R.drawable.lechelala, 10.5f));
-        shoppingList.add(new Ingredientes("Harina", R.drawable.harina, 25f));
-        shoppingList.add(new Ingredientes("Huevo", R.drawable.huevo, 6f));
-        shoppingList.add(new Ingredientes("Levadura", R.drawable.lechelala, 12.5f));
-        listView.setAdapter(new MyListAdapter(this, R.layout.product, shoppingList, productos));
+        Ingredientes leche = new Ingredientes("Leche", R.drawable.lechelala, 10.5f);
+        Ingredientes harina = new Ingredientes("Harina", R.drawable.harina, 25f);
+        Ingredientes huevo = new Ingredientes("Huevo", R.drawable.huevo, 6f);
+        Ingredientes levadura = new Ingredientes("Levadura", R.drawable.levadura, 12.5f);
+        Collections.addAll(shoppingList, leche, harina, huevo, levadura);
 
-        listView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        MyListAdapter myListAdapter = new MyListAdapter(this, R.layout.product, shoppingList);
+        listView.setAdapter(myListAdapter);
+    }
 
-                priceTotal.setText(productos.getPrecio());
-                priceTotal.setText(productos.getSumaUnidades());
-            }
-        });
+    @Override
+    public void update() {
+        float totalPrice = 0;
+        int totalUnit = 0;
+        for (Ingredientes ing : shoppingList) {
+            totalUnit += Integer.parseInt(ing.getUnits());
+            totalPrice += ing.getTotalPrice();
+        }
+        priceTotal.setText(Float.toString(totalPrice));
+        unitTotal.setText(Float.toString(totalUnit));
     }
 
 
     private class MyListAdapter extends ArrayAdapter<Ingredientes> {
-        ViewHolder mainViewholder = null;
 
         private int layout;
         private List<Ingredientes> mObjects;
-        private Productos productos;
 
-        private MyListAdapter(Context context, int resource, List<Ingredientes> objects, Productos productos) {
+        private MyListAdapter(Context context, int resource, List<Ingredientes> objects) {
             super(context, resource, objects);
             mObjects = objects;
             layout = resource;
-            this.productos = productos;
         }
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-
+            ViewHolder mainViewholder = null;
             if(convertView == null) {
                 LayoutInflater inflater = LayoutInflater.from(getContext());
                 convertView = inflater.inflate(layout, parent, false);
@@ -80,57 +81,46 @@ public class MainActivity extends AppCompatActivity {
                 viewHolder.title = (TextView) convertView.findViewById(R.id.productName);
                 viewHolder.price = (TextView) convertView.findViewById(R.id.productPrice);
                 viewHolder.thumbnail = (ImageView) convertView.findViewById(R.id.productThumbnail);
+                viewHolder.priceTotal = (TextView) convertView.findViewById(R.id.priceTotal);
                 convertView.setTag(viewHolder);
             }
 
             mainViewholder = (ViewHolder) convertView.getTag();
+
+            mainViewholder.title.setText(getItem(position).getProducto());
+            mainViewholder.price.setText(getItem(position).getPrice());
+            mainViewholder.thumbnail.setImageResource(getItem(position).getThumbnail());
+            mainViewholder.amount.setText(getItem(position).getUnits());
+            mainViewholder.priceTotal.setText(Float.toString(getItem(position).getTotalPrice()));
+
             mainViewholder.add.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    productos.agregar(getItem(position).getProducto());
-                    switch(getItem(position).getProducto()) {
-                        case "Leche":
-                            mainViewholder.amount.setText(productos.getLeche());
-                            break;
-                        case "Harina":
-                            mainViewholder.amount.setText(productos.getHarina());
-                            break;
-                        case "Huevo":
-                            mainViewholder.amount.setText(productos.getHuevo());
-                            break;
-                        case "Levadura":
-                            mainViewholder.amount.setText(productos.getLevadura());
-                            break;
-                    }
+                    getItem(position).add();
+                    ViewGroup viewGroup = (ViewGroup) v.getParent();
+                    TextView amount = (TextView) viewGroup.findViewById(R.id.amount);
+                    TextView priceTotal = (TextView) viewGroup.findViewById(R.id.priceTotal);
+                    amount.setText(getItem(position).getUnits());
+                    priceTotal.setText(Float.toString(getItem(position).getTotalPrice()));
+                    update();
                 }
             });
 
             mainViewholder.substract.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    productos.restar(getItem(position).getProducto());
-                    switch(getItem(position).getProducto()) {
-                        case "Leche":
-                            mainViewholder.amount.setText(productos.getLeche());
-                            break;
-                        case "Harina":
-                            mainViewholder.amount.setText(productos.getHarina());
-                            break;
-                        case "Huevo":
-                            mainViewholder.amount.setText(productos.getHuevo());
-                            break;
-                        case "Levadura":
-                            mainViewholder.amount.setText(productos.getLevadura());
-                            break;
-                    }
+                    getItem(position).substract();
+                    ViewGroup viewGroup = (ViewGroup) v.getParent();
+                    TextView amount = (TextView) viewGroup.findViewById(R.id.amount);
+                    TextView priceTotal = (TextView) viewGroup.findViewById(R.id.priceTotal);
+                    amount.setText(getItem(position).getUnits());
+                    priceTotal.setText(Float.toString(getItem(position).getTotalPrice()));
+                    update();
                 }
             });
-            mainViewholder.title.setText(getItem(position).getProducto());
-            mainViewholder.price.setText(getItem(position).getPrice());
-            mainViewholder.thumbnail.setImageResource(getItem(position).getThumbnail());
-
             return convertView;
         }
+
     }
 
     public class ViewHolder {
@@ -139,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
         ImageView thumbnail;
         Button add;
         Button substract;
+        TextView priceTotal;
         TextView amount;
     }
 
